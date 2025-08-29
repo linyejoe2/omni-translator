@@ -13,10 +13,12 @@ The project relies on several external libraries:
 - `langdetect`: For automatic language detection  
 - `gtts`: For Google Text-to-Speech functionality
 - `pygame`: For audio playback
+- `keyboard`: For global hotkey support (Ctrl+Alt+T)
+- `tkinter`: For GUI interface (usually included with Python)
 
 These need to be installed before running the application:
 ```bash
-pip install googletrans==4.0.0rc1 langdetect gtts pygame
+pip install googletrans==4.0.0rc1 langdetect gtts pygame keyboard
 ```
 
 ## Running the Application
@@ -25,19 +27,37 @@ pip install googletrans==4.0.0rc1 langdetect gtts pygame
 python main.py
 ```
 
-The application runs as an interactive console program where users input text and receive:
-1. Language detection results
-2. Translation to the target language (English ↔ Chinese)
-3. Audio pronunciation for English text
+The application starts with a hidden GUI window. Use **Ctrl+Alt+T** to toggle the window visibility. The GUI provides:
+1. Input field for text entry
+2. Description area showing translation results
+3. History list on the left side for previous translations
+4. Auto-focus on input when window appears
+5. Input clearing when window is hidden
+
+## UI Usage
+
+- **Ctrl+Alt+T**: Toggle window visibility
+- **Enter with text**: Translate input and play pronunciation
+- **Enter with empty input**: Replay last translation's pronunciation
+- **Double-click history**: View previous translation result
+- Window automatically focuses on input field when shown
 
 ## Architecture
 
-The application follows a simple modular structure:
+The application follows a modular structure with GUI components:
 
+**Core Functions:**
 - `detect_language(text)`: Uses langdetect to identify input language
 - `translate_text(text)`: Handles bidirectional translation using Google Translate
 - `speak_english(text)`: Generates and plays English audio using gTTS and pygame
-- `main()`: Interactive loop managing user input and coordinating all functions
+
+**UI Class (TranslatorUI):**
+- `setup_ui()`: Creates Tkinter interface with input, description area, and history
+- `setup_hotkeys()`: Configures global Ctrl+Alt+T hotkey using keyboard library
+- `toggle_window()`: Shows/hides window with proper focus management
+- `on_enter()`: Handles Enter key press with translation logic
+- `process_translation()`: Coordinates translation, TTS, and UI updates
+- `play_sound_async()`: Plays audio in separate thread to avoid blocking UI
 
 ## Audio Handling
 
