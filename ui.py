@@ -17,6 +17,7 @@ class TranslatorUI:
         
         # Translation history
         self.history = []
+        self.filtered_history = []  # For search filtering
         self.last_result = None
         self.storage = HistoryStorage("translation_history.json")
         
@@ -45,6 +46,15 @@ class TranslatorUI:
         # History frame (left side)
         history_frame = ttk.LabelFrame(content_frame, text="歷史記錄", padding=5)
         history_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 5))
+        
+        # History search input
+        history_search_frame = ttk.Frame(history_frame)
+        history_search_frame.pack(fill=tk.X, pady=(0, 5))
+        
+        ttk.Label(history_search_frame, text="搜尋:").pack(side=tk.LEFT)
+        self.history_search = ttk.Entry(history_search_frame)
+        self.history_search.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(5, 0))
+        self.history_search.bind('<KeyRelease>', self.on_history_search)
         
         # History listbox with scrollbar
         history_scroll_frame = ttk.Frame(history_frame)
@@ -154,10 +164,17 @@ class TranslatorUI:
             
     def add_to_history(self, result):
         self.history.append(result)
-        display_text = f"{result['input']}"
-        # display_text = f"[{result['timestamp']}] {result['input'][:30]}{'...' if len(result['input']) > 30 else ''}"
-        self.history_listbox.insert(tk.END, display_text)
-        self.history_listbox.see(tk.END)
+        
+        # Update filtered history if no search is active
+        if not self.history_search.get():
+            self.filtered_history.append(result)
+            display_text = f"{result['input']}"
+            self.history_listbox.insert(tk.END, display_text)
+            self.history_listbox.see(tk.END)
+        else:
+            # Refresh the filtered view
+            self.filter_history(self.history_search.get().lower())
+        
         self.save_history()
         
     def display_result(self, result):
@@ -199,10 +216,17 @@ class TranslatorUI:
         selection = self.history_listbox.curselection()
         if selection:
             index = selection[0]
-            if index < len(self.history):
-                result = self.history[index]
+            if index < len(self.filtered_history):
+                result = self.filtered_history[index]
                 self.display_result(result)
                 self.last_result = result
+                # Update search input to match
+                self.history_search.delete(0, tk.END)
+                self.history_search.insert(0, result['input'])
+                
+    def on_history_search(self, event):
+        search_text = self.history_search.get().lower()
+        self.filter_history(search_text)
                 
     def play_sound_async(self, text):
         # Play sound in separate thread to avoid blocking UI
@@ -215,11 +239,32 @@ class TranslatorUI:
                 return i, result
         return None, None
         
+    def filter_history(self, search_text):
+        """Filter history based on search text and update the listbox"""
+        self.history_listbox.delete(0, tk.END)
+        
+        if not search_text:
+            # Show all history
+            self.filtered_history = self.history.copy()
+        else:
+            # Filter history based on search text
+            self.filtered_history = [
+                result for result in self.history
+                if search_text in result['input'].lower() or 
+                   (result.get('translation') and search_text in result['translation'].lower())
+            ]
+        
+        # Populate listbox with filtered results
+        for result in self.filtered_history:
+            display_text = f"{result['input']}"
+            self.history_listbox.insert(tk.END, display_text)
+        
     def save_history(self):
         self.storage.save_history(self.history)
             
     def load_history(self):
         self.history = self.storage.load_history()
+        self.filtered_history = self.history.copy()  # Initially show all history
                     
         # Populate history listbox
         for result in self.history:
