@@ -41,6 +41,8 @@ The application starts with a hidden GUI window. Use **Ctrl+Alt+T** to toggle th
 - **Enter with text**: Translate input and play pronunciation
 - **Enter with empty input**: Replay last translation's pronunciation
 - **Double-click history**: View previous translation result
+- **History search**: Search through translation history using the search field
+- **Click on history item**: Populate search field with selected translation
 - Window automatically focuses on input field when shown
 
 ## Architecture
@@ -64,6 +66,8 @@ The application follows a modular structure with separate concerns:
 - `toggle_window()`: Shows/hides window with proper focus management
 - `process_translation()`: Coordinates translation, dictionary lookup, and UI updates
 - `display_result()`: Shows translation and dictionary data (definitions, examples)
+- `filter_history()`: Filters translation history based on search text
+- `on_history_search()`: Handles real-time history search functionality
 
 **storage.py (HistoryStorage):**
 - `save_history()` / `load_history()`: JSON-based persistence with UTF-8 support
@@ -78,4 +82,6 @@ The TTS functionality creates temporary MP3 files (`temp_audio.mp3`) that are au
 Currently supports:
 - English (`en`) → Traditional Chinese (`zh-tw`)
 - Chinese Simplified (`zh-cn`) and Traditional (`zh-tw`) → English  
-- Other detected languages default to Chinese translation with English pronunciation
+- Korean (`ko`) and Japanese (`ja`) → Traditional Chinese (`zh-tw`)
+- Other detected languages default to English translation with English pronunciation
+- Enhanced language detection provides dictionary lookup for both input and translated text
