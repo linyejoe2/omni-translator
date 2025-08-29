@@ -8,3 +8,7 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Application data files
+translation_history.json
+temp_audio.mp3
