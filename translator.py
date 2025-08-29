@@ -8,7 +8,7 @@ from dictionary import get_dictionary_info
 
 def detect_language(text):
     lang =  detect(text)
-    if lang in ['zh-cn', 'zh-tw', 'zh']:
+    if lang in ['zh-cn', 'zh-tw', 'zh', 'ko', 'ja']:
         return 'zh-tw'
     else:
         return "en"
@@ -38,6 +38,12 @@ def get_word_info(text, detected_lang):
         dictionary_info = get_dictionary_info(text)
         if dictionary_info:
             result['dictionary'] = dictionary_info
+    else:
+        dictionary_info = get_dictionary_info(result['translation'])
+        if dictionary_info:
+            result['dictionary'] = dictionary_info
+    
+    result['detected_lang'] = detect(text)
     
     return result
 
