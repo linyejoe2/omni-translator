@@ -15,6 +15,12 @@ class TranslatorUI:
         self.root.attributes('-topmost', True)  # Always on top
         # self.root.withdraw()  # Start hidden
         
+        # Set application icon
+        try:
+            self.root.iconphoto(True, tk.PhotoImage(file='icon.png'))
+        except:
+            pass  # Fallback if icon file is not found
+        
         # Translation history
         self.history = []
         self.filtered_history = []  # For search filtering
@@ -24,6 +30,7 @@ class TranslatorUI:
         self.setup_ui()
         self.setup_hotkeys()
         self.load_history()
+        self.show_window()
         
     def setup_ui(self):
         # Main frame
