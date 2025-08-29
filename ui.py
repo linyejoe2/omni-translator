@@ -94,10 +94,30 @@ class TranslatorUI:
             if self.last_result and self.last_result.get('english_text'):
                 self.play_sound_async(self.last_result['english_text'])
             return
+        
+        # Pre-lowercase input if it contains uppercase letters (A-Z)
+        if any(c.isupper() for c in input_text):
+            input_text = input_text.lower()
+            # Update the input field to show the lowercased text
+            self.input_entry.delete(0, tk.END)
+            self.input_entry.insert(0, input_text)
             
         # Check if same as last result
         if self.last_result and input_text == self.last_result['input']:
             self.play_sound_async(self.last_result['english_text'])
+            return
+        
+        # Check if input exists in history
+        history_index, existing_result = self.find_in_history(input_text)
+        if existing_result:
+            # Found in history - display existing result and highlight
+            self.display_result(existing_result)
+            self.last_result = existing_result
+            self.play_sound_async(existing_result['english_text'])
+            # Highlight the item in history list
+            self.history_listbox.selection_clear(0, tk.END)
+            self.history_listbox.selection_set(history_index)
+            self.history_listbox.see(history_index)
             return
             
         # New translation
@@ -134,7 +154,8 @@ class TranslatorUI:
             
     def add_to_history(self, result):
         self.history.append(result)
-        display_text = f"[{result['timestamp']}] {result['input'][:30]}{'...' if len(result['input']) > 30 else ''}"
+        display_text = f"{result['input']}"
+        # display_text = f"[{result['timestamp']}] {result['input'][:30]}{'...' if len(result['input']) > 30 else ''}"
         self.history_listbox.insert(tk.END, display_text)
         self.history_listbox.see(tk.END)
         self.save_history()
@@ -187,6 +208,13 @@ class TranslatorUI:
         # Play sound in separate thread to avoid blocking UI
         threading.Thread(target=lambda: speak_english(text), daemon=True).start()
         
+    def find_in_history(self, input_text):
+        """Find existing translation in history by input text"""
+        for i, result in enumerate(self.history):
+            if result['input'].lower() == input_text.lower():
+                return i, result
+        return None, None
+        
     def save_history(self):
         self.storage.save_history(self.history)
             
@@ -195,7 +223,8 @@ class TranslatorUI:
                     
         # Populate history listbox
         for result in self.history:
-            display_text = f"[{result['timestamp']}] {result['input'][:30]}{'...' if len(result['input']) > 30 else ''}"
+            display_text = f"{result['input']}"
+            # display_text = f"[{result['timestamp']}] {result['input'][:30]}{'...' if len(result['input']) > 30 else ''}"
             self.history_listbox.insert(tk.END, display_text)
             
         # Set last result to most recent

@@ -6,6 +6,7 @@ class CambridgeDictionary:
     """Cambridge Dictionary API integration for word definitions and examples"""
     
     def __init__(self):
+        # https://dictionary.cambridge.org/zht/%E8%A9%9E%E5%85%B8/%E8%8B%B1%E8%AA%9E-%E6%BC%A2%E8%AA%9E-%E7%B9%81%E9%AB%94/exception?q=exceptions
         self.base_url = "https://dictionary.cambridge.org/dictionary/english/"
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
