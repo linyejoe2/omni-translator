@@ -33,5 +33,19 @@
     "translation": "持久性",
     "english_text": "persistence",
     "timestamp": "09:43:37"
+  },
+  {
+    "input": "Add",
+    "detected_lang": "cy",
+    "translation": "添加",
+    "english_text": "Add",
+    "timestamp": "09:49:14"
+  },
+  {
+    "input": "Cambridge",
+    "detected_lang": "ca",
+    "translation": "劍橋",
+    "english_text": "Cambridge",
+    "timestamp": "09:49:27"
   }
 ]
