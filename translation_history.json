@@ -1,0 +1,37 @@
+[
+  {
+    "input": "Translator",
+    "detected_lang": "sv",
+    "translation": "翻譯",
+    "english_text": "Translator",
+    "timestamp": "09:39:48"
+  },
+  {
+    "input": "translate",
+    "detected_lang": "sv",
+    "translation": "翻譯",
+    "english_text": "translate",
+    "timestamp": "09:43:07"
+  },
+  {
+    "input": "python",
+    "detected_lang": "cy",
+    "translation": "Python",
+    "english_text": "python",
+    "timestamp": "09:43:26"
+  },
+  {
+    "input": "history",
+    "detected_lang": "en",
+    "translation": "歷史",
+    "english_text": "history",
+    "timestamp": "09:43:32"
+  },
+  {
+    "input": "persistence",
+    "detected_lang": "it",
+    "translation": "持久性",
+    "english_text": "persistence",
+    "timestamp": "09:43:37"
+  }
+]

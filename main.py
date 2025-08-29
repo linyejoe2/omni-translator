@@ -9,6 +9,7 @@ from tkinter import ttk, scrolledtext
 import keyboard
 import threading
 from datetime import datetime
+import json
 
 def detect_language(text):
     return detect(text)
@@ -18,7 +19,8 @@ def translate_text(text):
     lang = detect_language(text)
     # Chinese -> English, anything else -> Traditional Chinese
     dest_lang = 'en' if lang in ['zh-cn', 'zh-tw', 'zh'] else 'zh-tw'
-    result = translator.translate(text, dest=dest_lang)
+    if dest_lang != "en": lang = "en"
+    result = translator.translate(text, dest=dest_lang, src=lang)
     return result.text
 
 def speak_english(text):
@@ -44,14 +46,16 @@ class TranslatorUI:
         self.root = tk.Tk()
         self.root.title("Omni Translator")
         self.root.geometry("800x600")
-        self.root.withdraw()  # Start hidden
+        # self.root.withdraw()  # Start hidden
         
         # Translation history
         self.history = []
         self.last_result = None
+        self.history_file = "translation_history.json"
         
         self.setup_ui()
         self.setup_hotkeys()
+        self.load_history()
         
     def setup_ui(self):
         # Main frame
@@ -163,6 +167,7 @@ class TranslatorUI:
         display_text = f"[{result['timestamp']}] {result['input'][:30]}{'...' if len(result['input']) > 30 else ''}"
         self.history_listbox.insert(tk.END, display_text)
         self.history_listbox.see(tk.END)
+        self.save_history()
         
     def display_result(self, result):
         self.description_text.delete(1.0, tk.END)
@@ -187,6 +192,32 @@ class TranslatorUI:
     def play_sound_async(self, text):
         # Play sound in separate thread to avoid blocking UI
         threading.Thread(target=lambda: speak_english(text), daemon=True).start()
+        
+    def save_history(self):
+        try:
+            with open(self.history_file, 'w', encoding='utf-8') as f:
+                json.dump(self.history, f, ensure_ascii=False, indent=2)
+        except Exception as e:
+            print(f"Error saving history: {e}")
+            
+    def load_history(self):
+        try:
+            if os.path.exists(self.history_file):
+                with open(self.history_file, 'r', encoding='utf-8') as f:
+                    self.history = json.load(f)
+                    
+                # Populate history listbox
+                for result in self.history:
+                    display_text = f"[{result['timestamp']}] {result['input'][:30]}{'...' if len(result['input']) > 30 else ''}"
+                    self.history_listbox.insert(tk.END, display_text)
+                    
+                # Set last result to most recent
+                if self.history:
+                    self.last_result = self.history[-1]
+                    
+        except Exception as e:
+            print(f"Error loading history: {e}")
+            self.history = []
         
     def run(self):
         self.root.mainloop()
