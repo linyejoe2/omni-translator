@@ -226,6 +226,7 @@ dependencies = [
     { name = "keyboard" },
     { name = "langdetect" },
     { name = "pygame" },
+    { name = "requests" },
 ]
 
 [package.metadata]
@@ -235,6 +236,7 @@ requires-dist = [
     { name = "keyboard", specifier = ">=0.13.5" },
     { name = "langdetect", specifier = ">=1.0.9" },
     { name = "pygame", specifier = ">=2.6.1" },
+    { name = "requests", specifier = ">=2.31.0" },
 ]
 
 [[package]]

@@ -14,11 +14,12 @@ The project relies on several external libraries:
 - `gtts`: For Google Text-to-Speech functionality
 - `pygame`: For audio playback
 - `keyboard`: For global hotkey support (Ctrl+Alt+T)
+- `requests`: For Cambridge Dictionary web scraping
 - `tkinter`: For GUI interface (usually included with Python)
 
 These need to be installed before running the application:
 ```bash
-pip install googletrans==4.0.0rc1 langdetect gtts pygame keyboard
+pip install googletrans==4.0.0rc1 langdetect gtts pygame keyboard requests
 ```
 
 ## Running the Application
@@ -44,20 +45,29 @@ The application starts with a hidden GUI window. Use **Ctrl+Alt+T** to toggle th
 
 ## Architecture
 
-The application follows a modular structure with GUI components:
+The application follows a modular structure with separate concerns:
 
-**Core Functions:**
+**translator.py:**
 - `detect_language(text)`: Uses langdetect to identify input language
 - `translate_text(text)`: Handles bidirectional translation using Google Translate
+- `get_word_info(text, lang)`: Comprehensive word analysis with dictionary lookup
 - `speak_english(text)`: Generates and plays English audio using gTTS and pygame
 
-**UI Class (TranslatorUI):**
+**dictionary.py:**
+- `CambridgeDictionary`: Web scraper for Cambridge Dictionary
+- `lookup_word()`: Extracts definitions, examples, pronunciation, and part of speech
+- Supports English words only, with fallback for unavailable entries
+
+**ui.py (TranslatorUI):**
 - `setup_ui()`: Creates Tkinter interface with input, description area, and history
 - `setup_hotkeys()`: Configures global Ctrl+Alt+T hotkey using keyboard library
 - `toggle_window()`: Shows/hides window with proper focus management
-- `on_enter()`: Handles Enter key press with translation logic
-- `process_translation()`: Coordinates translation, TTS, and UI updates
-- `play_sound_async()`: Plays audio in separate thread to avoid blocking UI
+- `process_translation()`: Coordinates translation, dictionary lookup, and UI updates
+- `display_result()`: Shows translation and dictionary data (definitions, examples)
+
+**storage.py (HistoryStorage):**
+- `save_history()` / `load_history()`: JSON-based persistence with UTF-8 support
+- Handles dictionary data in translation history
 
 ## Audio Handling
 

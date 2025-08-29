@@ -10,4 +10,5 @@ dependencies = [
     "keyboard>=0.13.5",
     "langdetect>=1.0.9",
     "pygame>=2.6.1",
+    "requests>=2.31.0",
 ]

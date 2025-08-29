@@ -4,9 +4,14 @@ from gtts import gTTS
 import os
 import pygame
 import time
+from dictionary import get_dictionary_info
 
 def detect_language(text):
-    return detect(text)
+    lang =  detect(text)
+    if lang in ['zh-cn', 'zh-tw', 'zh']:
+        return 'zh-tw'
+    else:
+        return "en"
 
 def translate_text(text):
     translator = Translator()
@@ -16,6 +21,25 @@ def translate_text(text):
     if dest_lang != "en": lang = "en"
     result = translator.translate(text, dest=dest_lang, src=lang)
     return result.text
+
+def get_word_info(text, detected_lang):
+    """
+    Get comprehensive word information including translation and dictionary data
+    """
+    result = {
+        'input': text,
+        'detected_lang': detected_lang,
+        'translation': translate_text(text),
+        'dictionary': None
+    }
+    
+    # Get dictionary info for English words only
+    if detected_lang == 'en':  # Single word or two words max
+        dictionary_info = get_dictionary_info(text)
+        if dictionary_info:
+            result['dictionary'] = dictionary_info
+    
+    return result
 
 def speak_english(text):
     tts = gTTS(text=text, lang='en')

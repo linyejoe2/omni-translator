@@ -4,7 +4,7 @@ import keyboard
 import threading
 from datetime import datetime
 
-from translator import detect_language, translate_text, speak_english
+from translator import detect_language, translate_text, speak_english, get_word_info
 from storage import HistoryStorage
 
 class TranslatorUI:
@@ -12,6 +12,7 @@ class TranslatorUI:
         self.root = tk.Tk()
         self.root.title("Omni Translator")
         self.root.geometry("800x600")
+        self.root.attributes('-topmost', True)  # Always on top
         # self.root.withdraw()  # Start hidden
         
         # Translation history
@@ -105,17 +106,20 @@ class TranslatorUI:
     def process_translation(self, text):
         try:
             lang = detect_language(text)
-            translation = translate_text(text)
+            
+            # Get comprehensive word information (translation + dictionary)
+            word_info = get_word_info(text, lang)
             
             # Determine which text to speak (always the English text)
-            english_text = translation if lang in ['zh-cn', 'zh-tw', 'zh'] else text
+            english_text = word_info['translation'] if lang in ['zh-cn', 'zh-tw', 'zh'] else text
             
             # Create result object
             result = {
                 'input': text,
                 'detected_lang': lang,
-                'translation': translation,
+                'translation': word_info['translation'],
                 'english_text': english_text,
+                'dictionary': word_info.get('dictionary'),
                 'timestamp': datetime.now().strftime("%H:%M:%S")
             }
             
@@ -138,9 +142,33 @@ class TranslatorUI:
     def display_result(self, result):
         self.description_text.delete(1.0, tk.END)
         
-        content = f"原文: {result['input']}\n"
+        content = "=== Google 翻譯 ===\n"
+        content += f"{result['translation']}\n"
+        
+        # Add dictionary information if available
+        if result.get('dictionary'):
+            dict_info = result['dictionary']
+            content += "\n=== 劍橋辭典 ===\n"
+            
+            if dict_info.get('part_of_speech'):
+                content += f"詞性: {dict_info['part_of_speech']}\n"
+            
+            if dict_info.get('pronunciation'):
+                content += f"發音: /{dict_info['pronunciation']}/\n"
+            
+            if dict_info.get('definitions'):
+                content += "\n定義:\n"
+                for i, definition in enumerate(dict_info['definitions'], 1):
+                    content += f"  {i}. {definition}\n"
+            
+            if dict_info.get('examples'):
+                content += "\n例句:\n"
+                for i, example in enumerate(dict_info['examples'], 1):
+                    content += f"  {i}. {example}\n"
+                    
+        content += f"\n=== 系統資訊 ===\n"
+        content += f"原文: {result['input']}\n"
         content += f"檢測語言: {result['detected_lang']}\n"
-        content += f"翻譯: {result['translation']}\n"
         content += f"發音文字: {result['english_text']}\n"
         content += f"時間: {result['timestamp']}\n"
         
