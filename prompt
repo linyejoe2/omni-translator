@@ -1,0 +1,11 @@
+1. add a UI by Tkinter
+ + has a input at the top, a description area after it, a history list at left side
+ + can toggle by Ctrl+Alt+T
+ + when showing, auto focus on input
+ + when hidding, clean input value
+ + when press 'enter'
+	+ if input is empty, auto play sound of last result
+	+ if has input:
+	  + if is same as last result, play sound of last result
+	  + if not, translate it and play its sound, push in history list
+ + can click on history list to see result of then

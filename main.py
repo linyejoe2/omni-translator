@@ -15,7 +15,10 @@ def detect_language(text):
 
 def translate_text(text):
     translator = Translator()
-    result = translator.translate(text, dest='zh-tw' if detect_language(text) == 'en' else 'en')
+    lang = detect_language(text)
+    # Chinese -> English, anything else -> Traditional Chinese
+    dest_lang = 'en' if lang in ['zh-cn', 'zh-tw', 'zh'] else 'zh-tw'
+    result = translator.translate(text, dest=dest_lang)
     return result.text
 
 def speak_english(text):
@@ -134,8 +137,8 @@ class TranslatorUI:
             lang = detect_language(text)
             translation = translate_text(text)
             
-            # Determine which text to speak
-            english_text = text if lang == 'en' else translation
+            # Determine which text to speak (always the English text)
+            english_text = translation if lang in ['zh-cn', 'zh-tw', 'zh'] else text
             
             # Create result object
             result = {
