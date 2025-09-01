@@ -24,9 +24,41 @@ pip install googletrans==4.0.0rc1 langdetect gtts pygame keyboard requests
 
 ## Running the Application
 
+### Development Mode
 ```bash
 python main.py
 ```
+
+### Building Executable
+
+To create a standalone executable using PyInstaller:
+
+**Windows:**
+```bash
+build.bat
+```
+
+**Linux/macOS:**
+```bash
+./build.sh
+```
+
+**Manual build:**
+```bash
+pip install pyinstaller
+pyinstaller omni-translator.spec
+```
+
+The executable will be created in the `dist/` directory. The build process includes:
+- All required dependencies bundled
+- Icon integration 
+- Hidden console window for clean user experience
+- Temporary audio file handling
+
+**Build Requirements:**
+- PyInstaller (`pip install pyinstaller`)
+- All project dependencies installed
+- `icon.png` file present in project root
 
 The application starts with a hidden GUI window. Use **Ctrl+Alt+T** to toggle the window visibility. The GUI provides:
 1. Input field for text entry

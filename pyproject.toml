@@ -9,6 +9,8 @@ dependencies = [
     "gtts>=2.5.4",
     "keyboard>=0.13.5",
     "langdetect>=1.0.9",
+    "pillow>=11.3.0",
     "pygame>=2.6.1",
+    "pyinstaller>=6.15.0",
     "requests>=2.31.0",
 ]
