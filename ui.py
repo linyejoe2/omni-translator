@@ -63,7 +63,7 @@ class TranslatorUI:
         self.history_search.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(5, 0))
         self.history_search.bind('<KeyRelease>', self.on_history_search)
         
-        # History listbox with scrollbar
+        # History listbox with scrollbar and delete button
         history_scroll_frame = ttk.Frame(history_frame)
         history_scroll_frame.pack(fill=tk.BOTH, expand=True)
         
@@ -75,6 +75,13 @@ class TranslatorUI:
         history_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         
         self.history_listbox.bind('<Double-Button-1>', self.on_history_click)
+        
+        # Delete button frame
+        delete_frame = ttk.Frame(history_frame)
+        delete_frame.pack(fill=tk.X, pady=(5, 0))
+        
+        self.delete_button = ttk.Button(delete_frame, text="刪除選取項目", command=self.delete_selected_history)
+        self.delete_button.pack(side=tk.LEFT)
         
         # Description frame (right side)
         desc_frame = ttk.LabelFrame(content_frame, text="翻譯結果", padding=5)
@@ -234,6 +241,38 @@ class TranslatorUI:
     def on_history_search(self, event):
         search_text = self.history_search.get().lower()
         self.filter_history(search_text)
+        
+    def delete_selected_history(self):
+        """Delete the selected history item"""
+        selection = self.history_listbox.curselection()
+        if not selection:
+            return
+            
+        # Get the selected index in the filtered list
+        filtered_index = selection[0]
+        if filtered_index >= len(self.filtered_history):
+            return
+            
+        # Get the selected item from filtered history
+        selected_item = self.filtered_history[filtered_index]
+        
+        # Find and remove from main history
+        for i, item in enumerate(self.history):
+            if item == selected_item:
+                del self.history[i]
+                break
+        
+        # Remove from filtered history and listbox
+        del self.filtered_history[filtered_index]
+        self.history_listbox.delete(filtered_index)
+        
+        # Save updated history
+        self.save_history()
+        
+        # Clear description if the deleted item was being displayed
+        if self.last_result == selected_item:
+            self.description_text.delete(1.0, tk.END)
+            self.last_result = None
                 
     def play_sound_async(self, text):
         # Play sound in separate thread to avoid blocking UI
