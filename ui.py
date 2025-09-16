@@ -26,6 +26,8 @@ class TranslatorUI:
         self.filtered_history = []  # For search filtering
         self.last_result = None
         self.storage = HistoryStorage("translation_history.json")
+        # self.root.protocol("WM_DELETE_WINDOW", self.toggle_window)
+        self.root.bind("<Unmap>", self.on_minimize)
         
         self.setup_ui()
         self.setup_hotkeys()
@@ -109,6 +111,9 @@ class TranslatorUI:
     def hide_window(self):
         self.input_entry.delete(0, tk.END)
         self.root.withdraw()
+    
+    def on_minimize(self, event):
+        self.hide_window()
         
     def on_enter(self, event):
         input_text = self.input_entry.get().strip()
@@ -235,8 +240,11 @@ class TranslatorUI:
                 self.display_result(result)
                 self.last_result = result
                 # Update search input to match
-                self.history_search.delete(0, tk.END)
-                self.history_search.insert(0, result['input'])
+                # self.history_search.delete(0, tk.END)
+                # self.history_search.insert(0, result['input'])
+                self.input_entry.delete(0, tk.END)
+                self.input_entry.insert(0, result['input'])
+                self.play_sound_async(result['english_text'])
                 
     def on_history_search(self, event):
         search_text = self.history_search.get().lower()
